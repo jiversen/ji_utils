@@ -78,6 +78,7 @@ end
 
 srate = 1/mean(diff(t));
 xmin = min(t);
+xmax = max(t);
 
 % parse options
 opts = hlp_varargin2struct(varargin, ...
@@ -126,14 +127,17 @@ visinfo.opts = opts;
 
 % create figure & slider
 lastPos = 0;
-hFig = figure; guidata(hFig, visinfo); hold; axis(); set(hFig, 'ResizeFcn',@on_window_resized,'KeyPressFcn',@(varargin)on_key(varargin{2}));
+hFig = figure; guidata(hFig, visinfo); hold; axis();
+set(hFig, 'ResizeFcn',@on_window_resized,'KeyPressFcn',@(varargin)on_key(varargin{2}));
 ss = get(0,'ScreenSize');
 set(hFig,'position',[ 0.1*ss(3) 0.3*ss(4)  0.8*ss(3) 0.7*ss(4)]);
 
 hAxis = gca;
-hSlider = uicontrol('style','slider'); set(hSlider,'KeyPressFcn',@(varargin)on_key(varargin{2})); on_resize();
+hSlider = uicontrol('style','slider'); set(hSlider,'KeyPressFcn',@(varargin)on_key(varargin{2})); %on_resize();
 jSlider = findjobj(hSlider);
 jSlider.AdjustmentValueChangedCallback = @on_update;
+sliderWindowStep = opts.wndlen/(xmax-xmin);
+set(hSlider,'SliderStep',[sliderWindowStep sliderWindowStep*10])
 
 
 % do the initial update
@@ -260,7 +264,7 @@ on_update();
     function on_resize(varargin)
         % adapt/set the slider's size
         wPos = get(hFig,'Position');
-        if ~isempty(hSlider)
+        if exist('hSlider','var') && ~isempty(hSlider)
             try
                 set(hSlider,'Position',[20,20,wPos(3)-40,20]);
             catch,end
@@ -274,21 +278,27 @@ on_update();
     end
 
     function on_key(eventData)
-        visinfo = evalin('base',visname);
+        %visinfo = evalin('base',visname);
+        visinfo = guidata(hFig);
         key = eventData.Character;
+        if isempty(key), return, end
         switch lower(key)
             case {'add','+'}
                 % decrease datascale
                 visinfo.opts.yscaling = visinfo.opts.yscaling*0.9;
             case {'subtract','-'}
                 % increase datascale
-                visinfo.opts.yscaling = visinfo.opts.yscaling*1.1;
+                visinfo.opts.yscaling = visinfo.opts.yscaling*(1/0.9);
             case {'multiply','*'}
                 % increase timerange
-                visinfo.opts.wndlen = visinfo.opts.wndlen*1.1;                
+                visinfo.opts.wndlen = visinfo.opts.wndlen*(1/0.8);
+                sliderWindowStep = opts.wndlen/(xmax-xmin);
+                set(hSlider,'SliderStep',[sliderWindowStep sliderWindowStep*10])
             case {'divide','/'}
                 % decrease timerange
-                visinfo.opts.wndlen = visinfo.opts.wndlen*0.9;                
+                visinfo.opts.wndlen = visinfo.opts.wndlen*0.8;
+                sliderWindowStep = opts.wndlen/(xmax-xmin);
+                set(hSlider,'SliderStep',[sliderWindowStep sliderWindowStep*10])
             case {'pagedown','uparrow',char(30)}
                 % shift display page offset down
                 visinfo.opts.pageoffset = visinfo.opts.pageoffset+1;                
