@@ -101,7 +101,12 @@ opts = hlp_varargin2struct(varargin, ...
 if isscalar(opts.line_width)
     opts.line_width = [opts.line_width opts.line_width]; end
 
-if opts.equalize_channel_scaling    
+if opts.equalize_channel_scaling  
+    %zero-mean
+    mo  = mean(olddata,2);
+    olddata = olddata - mo;
+    newdata = newdata - mo;
+    
     rescale = 1./mad(olddata,[],2);
     newdata = bsxfun(@times,newdata,rescale);
     olddata = bsxfun(@times,olddata,rescale);
@@ -122,6 +127,9 @@ visinfo.opts = opts;
 % create figure & slider
 lastPos = 0;
 hFig = figure; guidata(hFig, visinfo); hold; axis(); set(hFig, 'ResizeFcn',@on_window_resized,'KeyPressFcn',@(varargin)on_key(varargin{2}));
+ss = get(0,'ScreenSize');
+set(hFig,'position',[ 0.1*ss(3) 0.3*ss(4)  0.8*ss(3) 0.7*ss(4)]);
+
 hAxis = gca;
 hSlider = uicontrol('style','slider'); set(hSlider,'KeyPressFcn',@(varargin)on_key(varargin{2})); on_resize();
 jSlider = findjobj(hSlider);
