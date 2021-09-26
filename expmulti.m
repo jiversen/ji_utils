@@ -24,10 +24,12 @@ if ~nargin,
     return
 end
 
-if ~exist('G','var')
-  figpath = '/Users/tzu-hancheng/Google_Drive/Academia/Swartz_center/imaginedbeats/figures';
-else
-  figpath = G.paths.figpath;
+global G
+
+try
+    figpath = G.paths.figpath;
+catch
+    figpath = fullfile(userhome,'FIGS');
 end
 
 doAllFigs = 1; %do all figs, not just jisubplot figs

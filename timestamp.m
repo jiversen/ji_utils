@@ -28,7 +28,7 @@ function [ret1, ret2, ret3]=timestamp(prefix)
 
 global G
 
-user='tzc'; %user name will appear in timestamp
+user=username; %user name will appear in timestamp
 
 %timestamp text: default is prefix user date and time
 rightnow = fix(clock);
