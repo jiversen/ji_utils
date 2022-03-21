@@ -16,7 +16,7 @@ if (nargin<3),
 end
 
 subfs = round(fs*.75);
-text = sprintf('\\fontsize{%d}\\bf%s\n\\fontsize{%d}\\rm%s',fs,text,subfs,sub);
+text = sprintf('\\fontsize{%d}\\bf%s\n\\fontsize{%d}\\rm%s',fs,protect_underscore(text),subfs,protect_underscore(sub));
 h=title(text);
 set(h,'verticalalignment','bottom')
 
@@ -28,7 +28,7 @@ if nargin==4
         ytop=ax(4);
         ybot=ax(3);
         yrange = ax(4)-ax(3);
-        if strcmp('reverse',get(gca,'ydir')),
+        if strcmp('reverse',get(gca,'ydir'))
             pos(2)=ybot+.025*yrange;
         else
             pos(2)=ytop;%-.025*yrange;

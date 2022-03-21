@@ -50,9 +50,14 @@ function [nout, xout, hout] = jihist(data, varargin)
 %
 %   
 
-if ~nargin,
+if ~nargin
     help jihist
     return
+end
+
+%short circuit if no data
+if isempty(data)
+  return
 end
 
 %handle bins
