@@ -5,19 +5,20 @@ function cbal(lim)
 %
 %   cbal(lim): create symmetric (round 0) axis with limit lim
 %
-% forces hotcold colormap
+
+% 7/22 no longer forces hotcold colormap
 
 
 
 %if prod(yl) < 0, %spans zero
-if nargin,
+if nargin
   m = lim;
 else
   yl=caxis;
   m=niceround(max(abs(yl)),-1);
 end
 caxis(m*[-1 1])
-colormap hotcold
+%colormap hotcold
 %colormap redwhiteblue %better on printer
 %brighten(-.8)
 %jicolorbar

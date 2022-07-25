@@ -16,6 +16,7 @@ function handle=jicolorbar(loc,tit)
 %
 %   The size of colorbars is also a bit different: I think they look much better
 %       narrower. They are also placed flush with the edge of the axis.
+%       JICOLORBAR('wide') is the same width as the default colorbar.
 %
 %   In addition, you can show half-height versions of the colorbar using:
 %   JICOLORBAR('vshort') adds a half-height vertical color scale.
@@ -28,6 +29,19 @@ function handle=jicolorbar(loc,tit)
 %   or updates an existing colorbar.
 %
 %   H = JICOLORBAR(...) returns a handle to the colorbar axis.
+%
+%   Note, jicolorbar can be used together with colorbar and freezeColors to provide two
+%   colorbars for a single axis. E.g.
+%       scatter(abs(randn(100,1)),randn(100,1),rand(100,1)*100,rand(100,1),'filled');colormap hot
+%       freezeColors; freezeColors(jicolorbar)
+%       hold on
+%       scatter(-abs(randn(100,1)),randn(100,1),rand(100,1)*100,rand(100,1),'filled');colormap cool
+%       freezeColors; freezeColors(colorbar)
+%
+%   JICOLORBAR('...freeze') 'fix' added as suffix to other location strings causes the colorscale 
+%   to be fixed and not changed by future changes to caxis or colormap. Useful with freezeColors.
+%       I don't think it's needed, is it? We can freeze and unfreeze the colorbar
+%       directly since it's based on an image.
 
 %   Clay M. Thompson 10-9-92
 %   Copyright (c) 1984-98 by The MathWorks, Inc.
@@ -38,39 +52,41 @@ function handle=jicolorbar(loc,tit)
 
 % JRI Modified matlab function colorbar
 
-changeNextPlot = 1;
-
-fs = get(gca,'fontsize')-1; %fontsize for colorbar axis
-
-if nargin<1, loc = 'vert'; end
-if nargin<2, tit = ''; end
-
 % Catch colorbar('delete') special case -- must be called by the deleteFcn.
-if nargin==1 & strcmp(loc,'delete'),
+if nargin==1 && strcmp(loc,'delete')
   ax = gcbo;
   if strcmp(get(ax,'tag'),'JI_COLORBAR'), ax=get(ax,'parent'); end
   ud = get(ax,'userdata');
-  if isfield(ud,'PlotHandle') & ishandle(ud.PlotHandle) & ...
-     isfield(ud,'origPos') & ~isempty(ud.origPos)
+  if isfield(ud,'PlotHandle') && ishandle(ud.PlotHandle) && ...
+     isfield(ud,'origPos') && ~isempty(ud.origPos)
      units = get(ud.PlotHandle,'units');
      set(ud.PlotHandle,'units','normalized');
      set(ud.PlotHandle,'position',ud.origPos);
      set(ud.PlotHandle,'units',units);
   end
-  if isfield(ud,'DeleteProxy') & ishandle(ud.DeleteProxy)
+  if isfield(ud,'DeleteProxy') && ishandle(ud.DeleteProxy)
     delete(ud.DeleteProxy)
   end
-  if ~isempty(legend)
-    legend % Update legend
-  end
+%   hl = legend;
+%   if hl.Visible
+%     legend % Update legend
+%   end
   return
 end
 
+changeNextPlot = 1;
+
+fs = get(gca,'fontsize')-1; %fontsize for colorbar axis
+
+if nargin<1, loc = 'vert'; end
+if ~strcmp(loc,'delete') && isempty(findstr(loc,'vert')), loc = ['vert' loc]; end
+if nargin<2, tit = ''; end
+
 ax = [];
-if nargin==1,
+if nargin==1
     if ishandle(loc)
         ax = loc;
-        if ~strcmp(get(ax,'type'),'axes'),
+        if ~strcmp(get(ax,'type'),'axes')
             error('Requires axes handle.');
         end
         units = get(ax,'units'); set(ax,'units','pixels');
@@ -87,17 +103,19 @@ ch = get(gcda,'children');
 hasimage = 0; t = [];
 cdatamapping = 'direct';
 
-for i=1:length(ch),
+for i=1:length(ch)
     typ = get(ch(i),'type');
-    if strcmp(typ,'image'),
+    if strcmp(typ,'image')
         hasimage = 1;
         cdatamapping = get(ch(i), 'CDataMapping');
-    elseif strcmp(typ,'surface') & ...
+    elseif strcmp(typ,'surface') && ...
             strcmp(get(ch(i),'FaceColor'),'texturemap') % Texturemapped surf
         hasimage = 2;
         cdatamapping = get(ch(i), 'CDataMapping');
-    elseif strcmp(typ,'patch') | strcmp(typ,'surface')
+    elseif strcmp(typ,'patch') || strcmp(typ,'surface')
         cdatamapping = get(ch(i), 'CDataMapping');
+    elseif strcmp(typ, 'scatter')
+        cdatamapping = 'scaled';
     end
 end
 
@@ -107,7 +125,7 @@ if ( strcmp(cdatamapping, 'scaled') )
   d = (t(2) - t(1))/size(colormap,1);
   t = [t(1)+d/2  t(2)-d/2];
 else
-    if hasimage,
+    if hasimage
         t = [1, size(colormap,1)]; 
     else
         t = [1.5  size(colormap,1)+.5];
@@ -116,13 +134,13 @@ end
 
 h = gcda;
 
-if nargin==0,
-    % Search for existing colorbar
+if nargin==0
+    % Search for xisting colorbar
     ch = get(findobj(gcf,'type','image','tag','JI_COLORBAR'),{'parent'}); ax = [];
-    for i=1:length(ch),
+    for i=1:length(ch)
         ud = get(ch{i},'userdata');
         d = ud.PlotHandle;
-        if prod(size(d))==1 & isequal(d,h), 
+        if prod(size(d))==1 && isequal(d,h)
             ax = ch{i}; 
             pos = get(ch{i},'Position');
             if pos(3)<pos(4), loc = 'vert'; else loc = 'horiz'; end
@@ -136,25 +154,29 @@ if nargin==0,
 end
 
 origNextPlot = get(gcf,'NextPlot');
-if strcmp(origNextPlot,'replacechildren') | strcmp(origNextPlot,'replace'),
+if strcmp(origNextPlot,'replacechildren') || strcmp(origNextPlot,'replace')
     set(gcf,'NextPlot','add')
 end
 
-if loc(1)=='v', % Append vertical scale to right of current plot
+if loc(1)=='v' % Append vertical scale to right of current plot
     
-    if ~isempty(findstr(loc,'short')),
+    if ~isempty(findstr(loc,'short'))
         scale = 0.5;         %height relative to axis height
     else
         scale = 1;
     end
     
-    if isempty(ax),
+    if isempty(ax)
         units = get(h,'units'); set(h,'units','normalized')
         pos = get(h,'Position'); 
         [az,el] = view;
         
         %JRI MODIFIED to not modify original axis size, and give a narrower bar
         stripe = 0.04; edge = 0.01; 
+        
+        if ~isempty(findstr(loc,'wide'))
+            stripe = 0.07;
+        end
 
         if all([az,el]==[0 90]), space = 0; else space = .1; end
         %set(h,'Position',[pos(1) pos(2) pos(3)*(1-stripe-edge-space) pos(4)])
@@ -194,7 +216,7 @@ if loc(1)=='v', % Append vertical scale to right of current plot
     %%% JRI 10/14/03
     %%% enable fixed colors, so when change colormap, colorbar doesn't
     %%% change
-    if ~isempty(findstr(loc,'fix')),
+    if ~isempty(findstr(loc,'freeze'))
         cm = colormap;
         cc(:,1,1) = cm(:,1);
         cc(:,1,2) = cm(:,2);
@@ -207,19 +229,19 @@ if loc(1)=='v', % Append vertical scale to right of current plot
     set(ax,'xtick',[])
 
     % set up axes deletefcn
-    set(ax,'tag','Colorbar','deletefcn','jicolorbar(''delete'')')
+    set(ax,'tag','JI_Colorbar','deletefcn','jicolorbar(''delete'')')
 
     title(tit)
     
-elseif loc(1)=='h', % Append horizontal scale to top of current plot
+elseif loc(1)=='h' % Append horizontal scale to top of current plot
     
-    if ~isempty(findstr(loc,'short')),
+    if ~isempty(findstr(loc,'short'))
         scale = 0.5;         %height relative to axis height
     else
         scale = 1;
     end
     
-    if isempty(ax),
+    if isempty(ax)
         %%JRI *** don't change axis position,
         %% add option to scale length of colorbar
         
@@ -256,7 +278,7 @@ elseif loc(1)=='h', % Append horizontal scale to top of current plot
     set(ax,'ytick',[])
 
     % set up axes deletefcn
-    set(ax,'tag','Colorbar','deletefcn','jicolorbar(''delete'')')
+    set(ax,'tag','JI_Colorbar','deletefcn','jicolorbar(''delete'')')
     
 else
   error('COLORBAR expects a handle, ''vert'', or ''horiz'' as input.')
@@ -268,9 +290,10 @@ ud.PlotHandle = h;
 set(ax,'userdata',ud)
 axes(h)
 set(gcf,'NextPlot',origNextPlot)
-if ~isempty(legend)
-  legend % Update legend
-end
+% hl = legend;
+% if hl.Visible
+%     legend % Update legend
+% end
 if nargout>0, handle = ax; end
 
 %--------------------------------
@@ -278,7 +301,7 @@ function h = gcda
 %GCDA Get current data axes
 
 h = datachildren(gcf);
-if isempty(h) | any(h == gca)
+if isempty(h) || any(h == gca)
   h = gca;
 else
   h = h(1);

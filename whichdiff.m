@@ -12,13 +12,18 @@ function whichdiff(fname, idx)
 %
 % 9/5/15 JRI
 
-if nargin < 2,
+if nargin < 2
     idx = [1 2]; %default, compare first two
 end
 
 files = eval(['which(''-all'', ''' fname ''')']);
 
-if length(files)<2,
+if isempty(files)
+    disp([ fname ' was not found on path.'])
+    return
+end
+
+if length(files)<2
   disp(['only one ' fname ' was found on path.'])
   disp(files{1})
   return

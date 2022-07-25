@@ -1,9 +1,9 @@
 function cmap = greenred(N)
-% GREENRED  Colormap: green thru black thru red, for distinguishing pos & minus
+% GREENRED  Colormap: red thru black thru green, for distinguishing pos & minus
 %
 % JRI
 
-if ~nargin,
+if ~nargin
     N = 64;
 end
 

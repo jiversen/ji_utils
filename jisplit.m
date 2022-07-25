@@ -1,5 +1,8 @@
 function pieces = jisplit(str,delimiter)
-% split split a string on an arbitrary delimiter
+% jisplit split a string on an arbitrary delimiter
+%
+%   2022 obsolete. The only minor improvement is it allows e.g. \n as
+%   delimiter, but could use split with sprintf('\n') or newline
 %
 %   pieces = split(str,delimeter)
 %
@@ -15,7 +18,7 @@ function pieces = jisplit(str,delimiter)
 %
 %   See also JOIN.
 %       
-% JRI 3/13/07
+% JRI 3/13/07sp
 
 if iscell(str)
     for i = 1:length(str)
@@ -31,7 +34,7 @@ if isempty(str)
  return
 end
 
-require(ischar(str)&ischar(delimiter),'Inputs must be strings')
+assert((ischar(str)|isstring(str))&(ischar(delimiter)|isstring(delimiter)),'Inputs must be strings')
 
 delimiter = sprintf(delimiter); %expand escapes such as \t & \n
 
