@@ -260,7 +260,10 @@ if pane(1) > 0
         set(fig,'visible',get(currentfig,'visible'));
         figure(fig)
         currentfig = gcf;
-        jisuptitle(G.plot.layout.jisuptitlestr)
+        try
+            jisuptitle(G.plot.layout.jisuptitlestr)
+        catch
+        end
     end
 end
 
