@@ -1,33 +1,36 @@
-function hout = patchx(fromx, tox, c, a)
+function hout = patchx(fromx, tox, c, a, y_lim)
 %  patchx   plot shaded patches on plot
 %
-%   h =patchx(fromx, tox,[c], [a])
+%   h =patchx(fromx, tox,[c], [a], [yl])
 %
 %       plots light gray patches between fromx and tox
 %           w/ y limits equal to current ylim
 %
 %       if fromx, tox are vectors, plots multiple patches
 %
-%       c is color (default 80% gray)
-%       a is alpha (default 0.2)
+%       c   color [r g b] or letter
+%       a   alpha (default 0.2)
+%       yl  alternate ylimits (by default matches ylimit of axis)
 %
 % JRI 7/20/04
 
-if nargin == 0,
+if nargin == 0
   help patchx
   return
 end
 
-if nargin < 3
-    c = 0.8 * [1 1 1];
+if ~exist('c','var')
     c = [0 0 0];
 end
 
-if nargin < 4
+if ~exist('a','var')
   a = 0.2;
 end
 
-y_lim = ylim;
+if ~exist('y_lim','var')
+    y_lim = ylim;
+end
+
 top = y_lim(2);
 bot = y_lim(1);
 
@@ -38,10 +41,10 @@ for r = 1:length(fromx) %plot a grey patch for gallop epochs
     if any(isnan([l r])), continue, end
     patch_x = [l r r l l];
     patch_y = [top top bot bot top];
-    h = patch(patch_x,patch_y,c,'edgecolor','none', 'facealpha',a);
+    h = patch(patch_x,patch_y,c,'edgecolor','none', 'facealpha',a,'clipping','off');
     hands = [hands h]; %collect list of patch handles
 end
 
-if nargout,
+if nargout
     hout = hands;
 end
