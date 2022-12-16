@@ -23,21 +23,21 @@ to = length(collection);
 
 nPoint = size(point,2);
 
-if nPoint>1,
-  for iP = 1:nPoint,
+if nPoint>1
+  for iP = 1:nPoint
     [idx(iP), d(iP)] = jnearest(point(iP),collection);
   end
 else
   
   %binary search
-  while to-from > 1,
+  while to-from > 1
     mid = floor((from+to)/2);
     d = collection(mid) - point;
-    if d == 0,
+    if d == 0
       idx = mid;
       d = 0;
       return
-    elseif d < 0,
+    elseif d < 0
       from = mid;
     else
       to = mid;
@@ -46,12 +46,12 @@ else
   end
   
   %tiebreaker
-  if to-from==1 && (abs(collection(to) - point) < abs(collection(from) - point)),
+  if to-from==1 && (abs(collection(to) - point) < abs(collection(from) - point))
     from=to;
   end
   
   idx = from;
-  if nargout==2,
+  if nargout==2
     d = sqrt( (collection(idx) - point).^2 );
   end
   return
