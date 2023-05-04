@@ -15,7 +15,7 @@ if nargin==0,
 end
 
 if ~iscell(from), from = {from}; to = {to}; end
-require(length(from)==length(to),'from and to must be of same length')
+assert(length(from)==length(to),'from and to must be of same length')
 
 fn = fieldnames(s);
 

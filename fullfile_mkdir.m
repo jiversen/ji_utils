@@ -131,7 +131,7 @@ if isempty(str)
  return
 end
 
-require(ischar(str)&ischar(delimiter),'Inputs must be strings')
+assert(ischar(str) & ischar(delimiter),'Inputs must be strings')
 
 delimiter = sprintf(delimiter); %expand escapes such as \t & \n
 

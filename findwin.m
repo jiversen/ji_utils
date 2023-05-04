@@ -52,7 +52,7 @@ if length(t) > 2 && size(window,1)==1 && size(window,2)==2
     %% TEST
     if nargout > 1
         findidx = find( t >= window(1) & t < window(2) );
-        require(isequal(idx, findidx), 'output not equall to find!')
+        assert(~isequal(idx, findidx), 'output not equall to find!')
     end
     
     %new window parallel variant

@@ -36,7 +36,7 @@ end
 
 %% read lines
 fid = fopen(filename,'r');
-require(fid>0,'file not found')
+assert(fid>0,'file not found')
 lines = textscan(fid,'%s','Delimiter','','whitespace','','bufsize',256000);
 fclose(fid);
 lines = lines{1};

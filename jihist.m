@@ -86,7 +86,7 @@ doNumber    =  isparam('number',   varargin);
 doWeight = ~isempty(weights);
 
 if doWeight
-    require(all(size(data) == size(weights)), 'weights must be same size as data')
+    assert(all(size(data) == size(weights)), 'weights must be same size as data')
 end
 
 %calculate normalization (first, before extracting plotting subset)
@@ -94,7 +94,7 @@ if doNormalize
     if isempty(normidx)
         normidx = idx;
     end
-    require(length(normidx) <= length(data), 'normalization indices must fit within data')
+    assert(length(normidx) <= length(data), 'normalization indices must fit within data')
     if doWeight
         norm = sum(weights(normidx));       %proportion of total weight
     else

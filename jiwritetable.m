@@ -70,7 +70,7 @@ end
 if isempty(colLabels)
   startRow = 1;
 else
-  require(length(colLabels)==nCol,...
+  assert(length(colLabels)==nCol,...
     'there must same number of labels as columns in data')
   startRow = 0; %means we'll write column labels before data
 end
@@ -86,7 +86,7 @@ elseif iscell(data),
         data{iC} = [data{iC}]';
       end      
       [r,c] = size(data{iC});
-      require(r>1,['cell array contents must be column vectors (col # ' num2str(iC)]);
+      assert(r>1,['cell array contents must be column vectors (col # ' num2str(iC)]);
       nRow = r;
     end
     elementCmd = 'data{iC}(iR)';
@@ -201,6 +201,7 @@ nElem = length(S);
 for iE = 1:nElem,
   
   for fn = fieldnames(S)',
+
     if ~isstruct(S(iE).(fn{1})),
       Sf(iE).([prefix fn{1}]) = S(iE).(fn{1});
     else
@@ -218,30 +219,7 @@ for iE = 1:nElem,
       %finally, copy
       Sf(iE) = copyfields(tmp,Sf(iE));
     end
+
   end
-  
-end
-
-function require(condition, description)
-% require   JRI style assert handler
-%
-%   require(condition, description)
-%
-%       A plain english way to specify code expectations.
-%           Ensure condition is met. If not, raise error, printing description
-%
-% JRI 1/9/07
-
-if nargin==0,
-    help require
-    return
-end
-
-if nargin < 2,
-    description = '';
-end
-
-if ~(condition),
-    %dbstop if error
-    error([callername ':requirementNotMet'],description)
-end
+ 
+end 
