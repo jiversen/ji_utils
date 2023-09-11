@@ -35,6 +35,7 @@
 %   histoutline             - histoutline  Draw histogram outline
 %   jierrorbar              - Error bar plot. Fixed ERRORBAR to enable proper legends (JRI 12/01)
 %   jihist                  - jihist    more powerful histogram analysis/plotting
+%.  jplot3                  - convenience version of plot3
 %   plotDashedError         - plotDashedError  Plot curve with error range dashed above and below
 %   plotDisjoint            - plotDisjoint  Plot disjoint segments of a curve
 %   plotMeanMarker          - plotMeanMarker  show triangular marker marking the mean
