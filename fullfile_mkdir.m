@@ -37,6 +37,11 @@ fs = filesep;
 paths = varargin;
 narg = nargin;
 
+% Be robust to / or \ on PC
+if strncmp(computer,'PC',2)
+   paths{1} = strrep(paths{1},'/','\');
+end
+
 f = split(paths{1},fs);
 if isempty(f{1})
   f(1)=[];
@@ -133,7 +138,7 @@ end
 
 assert(ischar(str) & ischar(delimiter),'Inputs must be strings')
 
-delimiter = sprintf(delimiter); %expand escapes such as \t & \n
+%delimiter = sprintf(delimiter); %expand escapes such as \t & \n
 
 idelim = strfind(str,delimiter);
 ends = [idelim-1 length(str)];
