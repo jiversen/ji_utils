@@ -378,14 +378,15 @@ pos(1)=16 + 16;     %+ 16*currentfig; % to stagger
 %adjust figure size according to screen size, and # screens
 saveUnits = get(0,'units');
 set(0,'units','pixels');
-ss = get(0,'screensize');
 
-% get multiple monitor sizes (updated 3/26/13--different sized monitors)
+% get multiple monitor sizes (updated 3/26/13--different sized monitors, fixed 2/9/25)
 mp = get(0,'MonitorPositions');
+ss = sum(mp,1); %super screen size (enclosing all monitors)
 nMonitors = size(mp,1);
 if nMonitors > 1
-    mp(2,2) = mp(1,4)-mp(2,4); %correct y origin of second monitor
-    figureOrigin = [mp(2,1) + 64 mp(1,4) - 32-80]; %upper left corner of secondary monitor, with room for toolbars
+    %mp(2,2) = mp(1,4)-mp(2,4); %correct y origin of second monitor
+    %figureOrigin = [mp(2,1) + 64 mp(1,4) - 32-80]; %upper left corner of secondary monitor, with room for toolbars
+    figureOrigin = [mp(2,1) + 64 mp(2,2) + mp(2,4) - 32-80];
 else
     figureOrigin = [mp(3)*1/2 mp(4)-32-80];
 end
