@@ -1,5 +1,6 @@
 function hout = plotDisjoint(x,y,idx,varargin)
-%  plotDisjoint  Plot disjoint segments of a curve
+%  plotDisjoint  Plot disjoint segments of a curve, e.g. to highlight
+%  significant curve segments
 %
 %   h = plotDisjoint(x,y,idx,varargin)
 %

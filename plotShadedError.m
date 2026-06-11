@@ -1,7 +1,7 @@
-function [l, s] = plotShadedError(x,y,err,style,lw)
+function [l, s] = plotShadedError(x,y,err,style,lw,m)
 % plotShadedError  Plot curve with error range shaded underneath
 %
-% [l, s] = plotShadedError(x, y, err, [style],[lw])
+% [l, s] = plotShadedError(x, y, err, [style],[lw],[m])
 %
 %       x, y  basic curve
 %       err     if size of y, error range is y +/- err
@@ -9,6 +9,7 @@ function [l, s] = plotShadedError(x,y,err,style,lw)
 %       style   traditional color letter (r, g, b or k) plus line style -or-
 %                   [r g b] color (will use '-' line style)
 %       lw      linewidth. default thick (1.2)
+%       m       marker, default 'none'
 %
 %       l, s    handles for line and shading
 %
@@ -44,6 +45,10 @@ if nargin < 5,
 %   sec = 'b';
 end
 
+if nargin<6,
+    m='none';
+end
+
 sec = 'none'; %shading edge color
 
 if ~isnumeric(style),
@@ -56,9 +61,14 @@ if ~isnumeric(style),
             c=[bg bg 1];
         case 'g'
             c=[bg/2 1 bg/2];
+        case 'c'
+            c=[bg/2 1 1];
+        case 'm'
+            c=[1 1 bg/2];
         otherwise
             c=[.5 .5 .5];
     end
+
 
 else
     lc = style.*0.9;     %line color (darken)
@@ -90,11 +100,11 @@ hold on
 %     end
 % else
     s = patch(xs,ys,c);
-    set(s,'edgecolor',sec,'facealpha', 0.25);
+    set(s,'edgecolor',sec,'facealpha', 0.1);
 % end
 
 set(gcf,'renderer','opengl') %8/06 should happen automatically, lately it's not, so force
-l = plot(x,y,style, 'linewidth', lw);
+l = plot(x,y,style, 'linewidth', lw,'Marker',m);
 if ~isempty(lc),
     set(l,'color',lc)
 end

@@ -34,10 +34,13 @@ if isunix && ~isTextOnlyMatlabSession,
       newTitle = [newTitle parStr];
     end
     
-    %setPrompt([hn(1:3) ' >> ']); %put hostname into command prompt
     %better approach: add hostname to command window title (http://stackoverflow.com/questions/1924286)
-    jDesktop = com.mathworks.mde.desk.MLDesktop.getInstance;
-    jDesktop.getMainFrame.setTitle(newTitle);
+    % 2025a and beyond this no longer works
+    try
+        jDesktop = com.mathworks.mde.desk.MLDesktop.getInstance;
+        jDesktop.getMainFrame.setTitle(newTitle);
+    end
+
 end
 
 

@@ -130,6 +130,8 @@ ymanual = strcmp(get(gca,'ylimmode'),'manual');
 if ~doOutline
     h=bar(x,n,'hist');
     set(h,'facecolor',color,'edgecolor','none'); %then in ILLUSTRATOR, add 0.5 pt wide edge to bars!
+    hl = findobj(gca,'type','line');
+    delete(hl)
 else
     h = baroutline(x,n); %outline of bars
     set(h,'color',color,'linestyle',linespec,'linewidth',linewidth);

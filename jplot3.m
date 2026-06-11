@@ -11,26 +11,26 @@ function hout=jplot3(dat, style, varargin)
 %
 %   JRI 4/21/08
 
-if nargin==0,
+if nargin==0
     eval(['help ' mfilename])
     return
 end
 
-if nargin < 2,
+if nargin < 2
     style = 'b-';
 end
 
-if ( ~any(size(dat)) == 3 || ndims(dat) ~= 2 ),
+if ( ~any(size(dat)) == 3 || ndims(dat) ~= 2 )
     error('jplot3: data must be Nx3, or 3xN')
 end
 
 %find which dimension is 3, reorder to 3 columns
-if size(dat, 1) == 3,
+if size(dat, 1) == 3
     dat = dat.';
 end
 
 %better way, if len varargin is odd, take style as first entry
-if nargin > 1,
+if nargin > 1
     h = plot3(dat(:,1), dat(:,2), dat(:,3), style, varargin{:});
 elseif isempty(style) && nargin > 2
     h = plot3(dat(:,1), dat(:,2), dat(:,3), varargin{:});
@@ -39,7 +39,7 @@ else
 end
 
 %optimization - only setup axes once. Greatly speeds repeated calls to it
-if ~strcmp(get(gca,'tag'),'JPLOT3'),
+if ~strcmp(get(gca,'tag'),'JPLOT3')
   axis vis3d, axis equal
   grid on
   box on
@@ -48,7 +48,7 @@ if ~strcmp(get(gca,'tag'),'JPLOT3'),
   set(gca,'tag','JPLOT3')
 end
 
-if nargout,
+if nargout
     hout = h;
 end
 

@@ -3,9 +3,11 @@ function bfname = backupfile(filename)
 %
 %   backupfile(filename)
 %
+%   works well with newestFile
+%
 %   JRI 9/15/05
 
-if ~exist(filename,'file'),
+if ~exist(filename,'file')
     disp('backupfile: file not found')
     return
 end
@@ -15,18 +17,18 @@ end
 backupfilename = fullfile_mkdir(path,'~backups',[name '_' stamp '_backup' extension]);
 
 cname = computer;
-switch cname(1:2),
-    case 'PC',
+switch cname(1:2)
+    case 'PC'
         cmd = sprintf('copy "%s" "%s"', filename, backupfilename);
     otherwise
         cmd = sprintf('cp "%s" "%s"',   filename, backupfilename);
 end
 
 [status, result] = system(cmd);
-if status,
+if status
     disp(['backupfile: ' result])
 end
 
-if nargout,
+if nargout
     bfname = backupfilename;
 end
